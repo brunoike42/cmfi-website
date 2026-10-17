@@ -1,4 +1,5 @@
 <?php
+require_once __DIR__ . '/../home_cards.php';
 head('Home', '/');
 
 // Links typed in the admin: only /relative, http(s), mailto and tel are allowed.
@@ -18,15 +19,13 @@ $live     = !empty(single('livestream')['is_live']);
 $about    = single('about');
 $set      = single('site_settings');
 $churches = q('SELECT * FROM churches ORDER BY town LIMIT 6');
-$sermons  = q("SELECT * FROM resources WHERE kind = 'video' AND youtube_url <> '' ORDER BY date DESC, id DESC LIMIT 3");
+$sermons  = q("SELECT * FROM resources WHERE kind = 'video' AND youtube_url <> '' ORDER BY date DESC, id DESC LIMIT 9");
 $events   = q('SELECT * FROM events WHERE date >= ? ORDER BY date LIMIT 4', [date('Y-m-d H:i')]);
 $ministries = q('SELECT * FROM ministries ORDER BY sort_order, id LIMIT 6');
-$projects = q('SELECT * FROM projects LIMIT 4');
 $stories  = q('SELECT * FROM testimonies ORDER BY id DESC LIMIT 2');
 $news     = q('SELECT * FROM news ORDER BY date DESC LIMIT 3');
 $nChurch  = (int)one('SELECT COUNT(*) c FROM churches')['c'];
 $nProject = (int)one('SELECT COUNT(*) c FROM projects')['c'];
-$goals    = lines($about['goals'] ?? '');
 $faqs = [
     ['What should I expect on my first Sunday?', 'A warm welcome, uplifting worship and a practical message. Come as you are.'],
     ['Can I join online?', 'Yes. Every service is streamed live from the Livestream page.'],
@@ -61,14 +60,6 @@ $faqs = [
     </div>
   </article>
   <?php endforeach; ?>
-  <?php if (count($slides) > 1): ?>
-  <div class="hs-controls">
-    <button type="button" data-dir="-1" aria-label="Previous slide">&lsaquo;</button>
-    <span class="hs-dots"><?php foreach ($slides as $i => $s): ?><button type="button" data-go="<?= $i ?>" aria-label="Go to slide <?= $i + 1 ?>"<?= $i === 0 ? ' aria-current="true"' : '' ?>></button><?php endforeach; ?></span>
-    <button type="button" data-dir="1" aria-label="Next slide">&rsaquo;</button>
-    <button type="button" class="hs-pause" data-pause aria-label="Pause slideshow">Pause</button>
-  </div>
-  <?php endif; ?>
 </section>
 
 <div class="wrap">
@@ -79,38 +70,77 @@ $faqs = [
     <a href="/give"><b>Give</b><span>Mobile money and bank</span></a>
   </nav>
 
+  <!-- About us: one sliding card per About section (picture, name, "Read about ..." button). Edit under Pages > About topics -->
+  <?= xc_section('About us', xc_about_cards(), '/about', 'All about us') ?>
+
   <div class="sh"><h2>Your first Sunday</h2><a href="/join-us">Join us</a></div>
   <ol class="steps">
     <li><b>Pick a center</b><span>Choose the center nearest to you.</span></li>
     <li><b>We welcome you</b><span>Friendly greeters will meet you at the door.</span></li>
     <li><b>Connect</b><span>Stay for fellowship and find a way to serve.</span></li>
   </ol>
-
-  <?php if ($churches): ?>
+<?php if ($churches):
+  $ch_ic = [
+    'pin'   => '<path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/>',
+    'user'  => '<path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>',
+    'clock' => '<circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>',
+    'phone' => '<path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/>',
+    'map'   => '<polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6"/><line x1="8" y1="2" x2="8" y2="18"/><line x1="16" y1="6" x2="16" y2="22"/>',
+  ];
+  $ch_svg = fn(string $n) => '<svg class="ch-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' . $ch_ic[$n] . '</svg>';
+?>
   <div class="sh"><h2>Our centers</h2><a href="/join-us">All centers</a></div>
-  <div class="grid">
-    <?php foreach ($churches as $c): ?>
-      <article class="card">
+  <div class="ch-grid">
+    <?php foreach ($churches as $c):
+        $rows = [
+          ['pin',   implode(', ', array_filter([trim((string)($c['town'] ?? '')), trim((string)($c['address'] ?? ''))]))],
+          ['user',  trim((string)($c['leader'] ?? ''))],
+          ['clock', trim((string)($c['service_times'] ?? ''))],
+          ['phone', trim((string)($c['phone'] ?? ''))],
+        ]; ?>
+      <article class="ch-card">
         <h3><?= e($c['name']) ?></h3>
-        <p class="muted"><?= e($c['town']) ?><?= $c['address'] ? ', ' . e($c['address']) : '' ?></p>
-        <?php if ($c['service_times']): ?><p><?= e($c['service_times']) ?></p><?php endif; ?>
-        <?php if (preg_match('~^https?://~i', (string)$c['maps_url'])): ?><a href="<?= e($c['maps_url']) ?>" target="_blank" rel="noopener noreferrer">Get directions</a><?php endif; ?>
+        <ul class="ch-rows">
+          <?php foreach ($rows as [$ic, $tx]): if ($tx === '') continue; ?>
+            <li><?= $ch_svg($ic) ?><span><?= e($tx) ?></span></li>
+          <?php endforeach; ?>
+        </ul>
+        <div class="ch-foot">
+          <?php if (preg_match('~^https?://~i', (string)($c['maps_url'] ?? ''))): ?>
+            <a href="<?= e($c['maps_url']) ?>" target="_blank" rel="noopener noreferrer"><?= $ch_svg('map') ?>View on Google Maps</a>
+          <?php else: ?><span class="muted">Map link coming soon</span><?php endif; ?>
+        </div>
       </article>
     <?php endforeach; ?>
   </div>
   <?php endif; ?>
 
-  <?php if ($sermons): ?>
+  <?php
+  $sm = [];
+  foreach ($sermons as $r) { $vid = yt_id($r['youtube_url']); if ($vid) $sm[] = [$vid, $r]; }
+  if ($sm): ?>
   <div class="sh"><h2>Latest sermons</h2><a href="/resources?kind=video">Resources</a></div>
-  <div class="grid">
-    <?php foreach ($sermons as $r): $id = yt_id($r['youtube_url']); if (!$id) continue; ?>
-      <a class="card sermon" href="/resources?kind=video">
-        <span class="thumb" style="background-image:url('https://i.ytimg.com/vi/<?= e($id) ?>/hqdefault.jpg')"><i aria-hidden="true">&#9654;</i></span>
-        <b><?= e($r['title']) ?></b>
-        <span class="muted"><?= e(implode(', ', array_filter([$r['speaker'], fmt_date($r['date'])]))) ?></span>
-      </a>
-    <?php endforeach; ?>
-  </div>
+  <section class="xc" data-xc aria-label="Latest sermons">
+    <div class="xc-frame">
+      <button type="button" class="xc-nav xc-prev" aria-label="Previous sermons">&lsaquo;</button>
+      <div class="xc-viewport" tabindex="0">
+        <div class="xc-track">
+          <?php foreach ($sm as [$vid, $r]): ?>
+            <article class="xc-card">
+              <a class="xc-img" href="/resources?kind=video" aria-label="Watch <?= e($r['title']) ?>"><img src="https://i.ytimg.com/vi/<?= e($vid) ?>/hqdefault.jpg" alt="" loading="lazy"></a>
+              <div class="xc-body">
+                <h3><a href="/resources?kind=video"><?= e($r['title']) ?></a></h3>
+                <p><?= e(implode(', ', array_filter([$r['speaker'], fmt_date($r['date'])]))) ?></p>
+                <a class="btn sm" href="/resources?kind=video">Watch</a>
+              </div>
+            </article>
+          <?php endforeach; ?>
+        </div>
+      </div>
+      <button type="button" class="xc-nav xc-next" aria-label="Next sermons">&rsaquo;</button>
+    </div>
+    <div class="xc-bar"><div class="xc-dots"></div><button type="button" class="xc-pause" aria-label="Pause slideshow">Pause</button></div>
+  </section>
   <?php endif; ?>
 
   <div class="sh"><h2>Upcoming events</h2><a href="/events">All events</a></div>
@@ -142,12 +172,9 @@ $faqs = [
 </div></section>
 
 <div class="wrap">
-  <div class="sh"><h2>Church projects</h2><a href="/projects">Projects</a></div>
-  <div class="grid">
-  <?php foreach ($projects as $p): ?>
-    <article class="card tint"><h3><?= e($p['name']) ?></h3><p class="muted"><?= e($p['summary']) ?></p></article>
-  <?php endforeach; if (!$projects): ?><p class="muted">Projects will appear here once you add them in the admin.</p><?php endif; ?>
-  </div>
+  <!-- Projects slideshow (real projects, edit under Content > Projects) and the "more to discover" slideshow (Pages > Home page cards) -->
+  <?= xc_section('Church projects', xc_project_cards(), '/projects', 'All projects') ?>
+  <?= xc_section('More to discover', xc_explore_cards()) ?>
 
   <?php if ($stories || $news): ?>
   <div class="sh"><h2>Lives changed and church news</h2></div>
@@ -160,13 +187,6 @@ $faqs = [
     <?php endforeach; ?>
   </div>
   <?php endif; ?>
-
-  <!-- Vision, mission and goals come from Pages > About page in the admin -->
-  <div class="sh"><h2>Our vision, mission and goals</h2><a href="/about">About us</a></div>
-  <div class="grid three vmg">
-    <div class="card"><h3>Our vision</h3><?php if (trim((string)($about['vision'] ?? '')) !== ''): ?><p><?= nl2br(e($about['vision'])) ?></p><?php else: ?><p><a href="/about">Read our vision</a></p><?php endif; ?></div>
-    <div class="card"><h3>Our mission</h3><?php if (trim((string)($about['mission'] ?? '')) !== ''): ?><p><?= nl2br(e($about['mission'])) ?></p><?php else: ?><p><a href="/about">Read our mission</a></p><?php endif; ?></div>
-    <div class="card"><h3>Our goals</h3><?php if ($goals): ?><ul><?php foreach ($goals as $g) echo '<li>' . e($g) . '</li>'; ?></ul><?php else: ?><p><a href="/about">Read our goals</a></p><?php endif; ?></div> </div>
 
   <div class="grid cta">
     <div class="card tint"><h3>Need prayer?</h3><p>Share your request with our team.</p><a class="btn" href="/prayer">Submit a prayer request</a></div>

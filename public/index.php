@@ -9,6 +9,9 @@ require __DIR__ . '/../src/layout.php';
 if (str_starts_with($path, '/admin')) { require __DIR__ . '/../src/admin.php'; exit; }
 if (preg_match('#^/submit/([a-z_]+)$#', $path, $m)) { require __DIR__ . '/../src/submit.php'; exit; }
 
+if (preg_match('#^/about/([a-z0-9-]+)$#', $path, $m)) { $topic = $m[1]; require __DIR__ . '/../src/pages/about-topic.php'; exit; }
+ 
+
 $pages = ['/' => 'home', '/join-us' => 'join-us', '/about' => 'about', '/ministries' => 'ministries', '/resources' => 'resources',
           '/livestream' => 'livestream', '/events' => 'events', '/projects' => 'projects', '/prayer' => 'prayer',
           '/give' => 'give', '/contact' => 'contact'];

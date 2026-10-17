@@ -64,11 +64,44 @@ function parts($line, int $n): array { return array_pad(array_map('trim', explod
 function yt_id($url): ?string { return preg_match('~(?:v=|youtu\.be/|embed/|live/)([\w-]{11})~', (string)$url, $m) ? $m[1] : null; }
 function fmt_date($d, bool $time = false): string { return $d ? date($time ? 'j M Y, g:i A' : 'j M Y', strtotime((string)$d)) : ''; }
 
+// Shrinks a freshly uploaded picture: max 1600px wide, JPEG for photos and opaque PNGs. Transparent PNGs stay PNG.
+// Returns the (possibly new) file path. If anything is unavailable or fails, the original file is kept untouched.
+function optimize_image(string $path, int $max = 1600): string {
+    $ext = strtolower(pathinfo($path, PATHINFO_EXTENSION));
+    if (!in_array($ext, ['jpg', 'jpeg', 'png'], true) || !function_exists('imagecreatefromjpeg') || filesize($path) < 200 * 1024) return $path;
+    $im = $ext === 'png' ? @imagecreatefrompng($path) : @imagecreatefromjpeg($path);
+    if (!$im) return $path;
+    if ($ext !== 'png' && function_exists('exif_read_data')) {            // phone photos: keep them the right way up
+        $o = @exif_read_data($path)['Orientation'] ?? 1;
+        $rot = [3 => 180, 6 => -90, 8 => 90][$o] ?? 0;
+        if ($rot && ($r = imagerotate($im, $rot, 0))) { imagedestroy($im); $im = $r; }
+    }
+    if (imagesx($im) > $max) { $s = imagescale($im, $max); if ($s) { imagedestroy($im); $im = $s; } }
+    $alpha = false;
+    if ($ext === 'png') {
+        $w = imagesx($im); $h = imagesy($im);
+        for ($y = 0; $y < $h && !$alpha; $y += max(1, intdiv($h, 40))) for ($x = 0; $x < $w; $x += max(1, intdiv($w, 40)))
+            if ((imagecolorat($im, $x, $y) >> 24) & 0x7F) { $alpha = true; break; }
+    }
+    $tmp = $path . '.tmp'; $out = $path;
+    if ($alpha) { imagealphablending($im, false); imagesavealpha($im, true); imagepng($im, $tmp, 9); }
+    else {
+        $bg = imagecreatetruecolor(imagesx($im), imagesy($im)); imagefill($bg, 0, 0, imagecolorallocate($bg, 255, 255, 255));
+        imagecopy($bg, $im, 0, 0, 0, 0, imagesx($im), imagesy($im)); imagedestroy($im); $im = $bg;
+        imagejpeg($im, $tmp, 80); $out = preg_replace('/\.(png|jpeg)$/i', '.jpg', $path);
+    }
+    imagedestroy($im);
+    if (is_file($tmp) && filesize($tmp) < filesize($path)) { @unlink($path); rename($tmp, $out); return $out; }
+    @unlink($tmp); return $path;
+}
+
 function save_upload(array $f, array $ok): ?string {
     if (($f['error'] ?? 4) !== UPLOAD_ERR_OK) return null;
     $ext = strtolower(pathinfo($f['name'], PATHINFO_EXTENSION));
     if (!in_array($ext, $ok, true) || $f['size'] > 50 * 1024 * 1024) return null;
     @mkdir(cfg('uploads'), 0775, true);
     $name = bin2hex(random_bytes(8)) . '.' . $ext;
-    return move_uploaded_file($f['tmp_name'], cfg('uploads') . '/' . $name) ? '/uploads/' . $name : null;
-}
+        $dest = cfg('uploads') . '/' . $name;
+    if (!move_uploaded_file($f['tmp_name'], $dest)) return null;
+    return '/uploads/' . basename(optimize_image($dest));
+    }

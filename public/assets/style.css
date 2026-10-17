@@ -3,8 +3,8 @@
 body{margin:0;background:var(--paper);color:var(--ink);font:16px/1.65 "Segoe UI",system-ui,sans-serif}
 h1,h2,h3{line-height:1.2;letter-spacing:-.01em}h1{font-size:2rem}h2{font-size:1.4rem;margin-top:2.2rem}
 a{color:inherit}.wrap{max-width:64rem;margin:0 auto;padding:0 1.25rem}main{padding-bottom:3rem;min-height:70vh}
-.top{border-bottom:1px solid var(--mist)}.top nav{display:flex;flex-wrap:wrap;gap:.75rem;align-items:center;justify-content:space-between;padding:.9rem 1.25rem}
-.brand{font-weight:700;font-size:3rem;color:var(--ink);text-decoration:none}.brand img{width:75px;height:75px;object-fit:contain;}.brand-text{display:flex;flex-direction:column;color:--ink;align-items:center;}.top ul{display:flex;flex-wrap:wrap;gap:1rem;list-style:none;margin:0;padding:0;font-size:.9rem;align-items:center}
+.top{border-bottom:0px solid var(--mist)}.top nav{display:flex;flex-wrap:wrap;gap:.75rem;align-items:center;justify-content:space-between;padding:.9rem 1.25rem}
+.brand{font-weight:700;font-size:3rem;color:var(--ink);text-decoration:none}.brand img{width:75px;height:75px;object-fit:contain;}.brand-text{display:flex;flex-direction:column;color:var(--black);align-items:center;}.top ul{display:flex;flex-wrap:wrap;gap:1rem;list-style:none;margin:0;padding:0;font-size:.9rem;align-items:center}
 .top ul a{text-decoration:none;color:var(--soft)}.top ul a:hover,.top ul a.on{color:var(--ink);font-weight:600}
 .btn{display:inline-block;background:var(--ink);color:var(--paper);border:0;border-radius:6px;padding:.6rem 1.2rem;font:inherit;font-weight:600;text-decoration:none;cursor:pointer}
 .btn.sm{padding:.35rem .9rem;font-size:.9rem}.top .btn{color:var(--paper)!important;font-weight:600}.btn.ghost{background:transparent;border:1px solid #fff8;color:var(--paper)}
@@ -232,94 +232,183 @@ main>.wrap>h1:first-child{animation:rv-drop .7s cubic-bezier(.22,1,.36,1) both}
   .btn::after{display:none}
 }
 
-/* ===== Scroll animations and count-up =====
-   Append to the very END of public/assets/app.js
-   It tags elements by itself, so no page needs editing. */
-(function () {
-  var reduce = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
-  if (reduce || !('IntersectionObserver' in window)) return;
 
-  var path = location.pathname.replace(/\/+$/, '') || '/';
-  var all = [];
+/* ===== About hub and topic pages. Append to the very END of public/assets/style.css ===== */
+.aintro{max-width:40rem;color:var(--soft);margin:.2rem 0 1.5rem}
+.atg{display:grid;gap:1rem;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));margin:0 0 2rem}
+.atc{display:flex;flex-direction:column;background:#fff;border:1px solid var(--mist);border-radius:12px;overflow:hidden;text-decoration:none;color:inherit;transition:transform .25s ease,box-shadow .25s ease,border-color .25s ease}
+.atimg{display:block;aspect-ratio:16/9;background:var(--mist);overflow:hidden}
+.atimg img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .5s ease}
+.atimg .rph{display:flex;width:100%;height:100%;align-items:center;justify-content:center;font-size:2.6rem;font-weight:700;color:var(--soft)}
+.atb{display:flex;flex-direction:column;gap:.35rem;padding:1rem 1.1rem 1.2rem;flex:1}
+.atb b{font-size:1.1rem}
+.atsum{color:var(--soft);font-size:.95rem;line-height:1.5}
+.atb i{font-style:normal;margin-top:auto;padding-top:.4rem;font-size:.9rem;font-weight:600;text-decoration:underline}
+.atc:focus-visible{outline:3px solid var(--sun);outline-offset:2px}
+@media (hover:hover){.atc:hover{transform:translateY(-6px);box-shadow:0 12px 24px rgba(10,30,60,.16);border-color:var(--sun)}.atc:hover .atimg img{transform:scale(1.08)}}
 
-  function tag(el, anim, i) {
-    if (!el || el.classList.contains('rv')) return;
-    el.classList.add('rv', 'rv-' + anim);
-    el.style.setProperty('--i', Math.min(i, 6));
-    all.push(el);
+.abn{background:var(--ink) center/cover no-repeat;color:var(--paper);text-align:center;padding:2.2rem 0 2.6rem}
+.abn h1{font-size:clamp(1.9rem,5vw,3rem);margin:.2rem 0 .3rem}
+.abn .abback{text-align:left;margin:0 0 1rem;font-size:.9rem}.abn .abback a{color:var(--mist)}
+.abtag{max-width:36rem;margin:0 auto;color:var(--mist);font-size:1.1rem}
+.abline{display:block;width:4rem;height:3px;background:var(--sun);margin:1.1rem auto 0;border-radius:2px}
+
+.kn{display:grid;gap:.8rem;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));margin:2rem 0}
+.kn div{background:#fff;border:1px solid var(--mist);border-top:4px solid var(--sun);border-radius:10px;padding:.9rem .5rem;text-align:center}
+.kn b{display:block;font-size:1.5rem;color:var(--ink)}.kn span{color:var(--soft);font-size:.9rem}
+
+.abk{display:grid;gap:2rem;grid-template-columns:1fr 1fr;align-items:center;margin:2.2rem 0}
+.abk.solo{grid-template-columns:1fr;max-width:44rem}
+.abk.flip .abm{order:-1}
+.abt h2{margin-top:0}.abt p,.abt li{font-size:1.05rem}
+.abm{min-width:0}.abimg{display:block;width:100%;height:auto;border-radius:12px}
+.abmore-h{margin:2.5rem 0 .4rem;font-weight:700}
+.abmore{display:flex;flex-wrap:wrap;gap:.5rem;margin:0 0 2rem}
+.abmore a{padding:.35rem .9rem;border:1px solid var(--ink);border-radius:99px;text-decoration:none;color:var(--ink);font-size:.92rem;transition:background-color .2s,color .2s}
+.abmore a:hover{background:var(--ink);color:var(--paper)}
+@media(max-width:760px){.abk{grid-template-columns:1fr;gap:1rem}.abk.flip .abm{order:0}}
+
+/* ===== YouTube click-to-play (append to the END of public/assets/style.css) ===== */
+.video .yt-play{position:absolute;inset:0;width:100%;height:100%;margin:0;padding:0;border:0;background:#000;cursor:pointer;overflow:hidden}
+.video .yt-play img{width:100%;height:100%;object-fit:cover;display:block;opacity:.92;transition:opacity .2s,transform .4s}
+.video .yt-play .yt-btn{position:absolute;left:50%;top:50%;width:4.4rem;height:3.1rem;margin:-1.55rem 0 0 -2.2rem;border-radius:.9rem;background:#c4302b;display:grid;place-items:center;transition:background-color .2s,transform .2s}
+.video .yt-play .yt-btn::before{content:"";margin-left:.25rem;border-style:solid;border-width:.7rem 0 .7rem 1.15rem;border-color:transparent transparent transparent #fff}
+.video .yt-play:hover img,.video .yt-play:focus-visible img{opacity:1;transform:scale(1.03)}
+.video .yt-play:hover .yt-btn,.video .yt-play:focus-visible .yt-btn{background:#e0302a;transform:scale(1.08)}
+@media (prefers-reduced-motion:reduce){.video .yt-play img,.video .yt-play .yt-btn{transition:none}}
+
+/* ===== Church cards: two columns, icon rows, map link at the bottom (append to the END of public/assets/style.css) ===== */
+.ch-grid{display:grid;gap:1rem;grid-template-columns:repeat(2,minmax(0,1fr));margin:1rem 0 0}
+.ch-card{display:flex;flex-direction:column;gap:.7rem;background:#fff;border:1px solid var(--mist);border-radius:12px;padding:1.1rem 1.25rem;transition:transform .25s ease,box-shadow .25s ease}
+.ch-card h2,.ch-card h3{margin:0;font-size:1.12rem;color:var(--ink)}
+.ch-rows{list-style:none;margin:0;padding:0;display:grid;gap:.5rem}
+.ch-rows li{display:flex;align-items:flex-start;gap:.65rem;line-height:1.45;color:var(--black)}
+.ch-ic{flex:none;width:1.05rem;height:1.05rem;margin-top:.22rem;color:var(--ink)}
+.ch-foot{margin-top:auto;padding-top:.75rem;border-top:1px solid var(--mist);font-size:.93rem}
+.ch-foot a{display:inline-flex;align-items:center;gap:.45rem;font-weight:600;color:var(--ink);text-decoration:none}
+.ch-foot a:hover{text-decoration:underline}
+.ch-foot .muted{color:var(--soft);opacity:.75}
+@media (max-width:700px){.ch-grid{grid-template-columns:1fr}}
+@media (hover:hover){.ch-card:hover{transform:translateY(-4px);box-shadow:0 12px 24px rgba(10,30,60,.14)}}
+@media (prefers-reduced-motion:reduce){.ch-card{transition:none}}
+
+/* ===== Admin: compact dashboard tiles + image fields with preview and Remove (append to the END of public/assets/style.css) ===== */
+.dash{display:grid;gap:.7rem;grid-template-columns:repeat(auto-fill,minmax(8.5rem,1fr));max-width:48rem;margin:1rem 0}
+.dash-tile{display:flex;flex-direction:column;gap:.1rem;padding:.7rem .9rem;background:var(--mist);border-radius:10px;text-decoration:none;color:var(--ink);transition:transform .2s ease,box-shadow .2s ease}
+.dash-tile b{font-size:.88rem;font-weight:600}
+.dash-tile span{font-size:1.55rem;font-weight:700;line-height:1.1}
+.dash-tile:hover{transform:translateY(-2px);box-shadow:0 8px 18px rgba(10,30,60,.14)}
+
+.a-field{display:grid;gap:.45rem}
+.a-lbl{font-size:.92rem;font-weight:600}
+.a-field>small{font-weight:400}
+.a-cur{display:flex;align-items:center;gap:.8rem;padding:.5rem;background:#fff;border:1px solid var(--mist);border-radius:8px}
+.a-thumb{width:5.5rem;height:3.6rem;flex:none;object-fit:cover;border-radius:6px;background:var(--mist)}
+.a-doc{display:grid;place-items:center;font-size:.75rem;font-weight:700;color:var(--soft)}
+.a-cur small{display:block;margin-bottom:.15rem;word-break:break-all}
+.a-rm{display:flex!important;flex-direction:row;align-items:center;gap:.4rem;font-size:.86rem;font-weight:600;color:var(--bad);cursor:pointer}
+.a-rm input{width:auto}
+.a-pick{font-size:.88rem;font-weight:600}
+.a-pick input{margin-top:.25rem;font-weight:400}
+.admin form.f{max-width:30rem}
+
+/* ===== Resources: sermons and audio in a two-column grid (append to the END of public/assets/style.css) ===== */
+.rs-grid{display:grid;gap:1.1rem;grid-template-columns:repeat(2,minmax(0,1fr));margin:1rem 0 1.5rem}
+.rs-card{display:flex;flex-direction:column;background:#fff;border:1px solid var(--mist);border-radius:12px;overflow:hidden;transition:transform .25s ease,box-shadow .25s ease}
+.rs-card .video{max-width:none;width:100%;margin:0}
+.rs-card audio{max-width:none;margin:.9rem 1rem 0;width:calc(100% - 2rem)}
+.rs-body{display:flex;flex-direction:column;gap:.2rem;padding:.85rem 1rem 1rem}
+.rs-body h2{margin:0;font-size:1.05rem;line-height:1.3;color:var(--ink)}
+.rs-body p{margin:0}
+.rs-body .rdesc{margin-top:.5rem}
+.rs-body .rdesc summary{text-align:left}
+@media (max-width:700px){.rs-grid{grid-template-columns:1fr}}
+@media (hover:hover){.rs-card:hover{transform:translateY(-4px);box-shadow:0 12px 24px rgba(10,30,60,.14)}}
+@media (prefers-reduced-motion:reduce){.rs-card{transition:none}}
+
+/* ===== About pages: shine + glow on pictures ===== */
+.abm,.atimg{
+  position:relative;overflow:hidden;border-radius:12px;isolation:isolate;
+  box-shadow:0 4px 14px rgba(23,97,176,.12);
+  transition:box-shadow .35s ease,transform .35s ease;
+}
+.abm img,.atimg img{display:block;width:100%;height:auto;transition:transform .6s ease,filter .35s ease}
+
+/* diagonal light sweep */
+.abm::after,.atimg::after{
+  content:"";position:absolute;top:0;left:-70%;width:45%;height:100%;z-index:2;pointer-events:none;
+  background:linear-gradient(105deg,transparent 0%,rgba(255,255,255,.55) 50%,transparent 100%);
+  transform:skewX(-18deg);opacity:0;
+}
+/* soft blue rim */
+.abm::before,.atimg::before{
+  content:"";position:absolute;inset:0;z-index:1;pointer-events:none;border-radius:inherit;
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.35),inset 0 0 28px rgba(240,180,41,.0);
+  transition:box-shadow .35s ease;
+}
+
+@media (hover:hover){
+  .abm:hover,.atc:hover .atimg{
+    transform:translateY(-3px);
+    box-shadow:0 10px 30px rgba(23,97,176,.35),0 0 26px rgba(240,180,41,.45);
   }
-  function rule(sel, anim) {                       // anim 'alt' = left, right, left...
-    var seen = new Map();
-    [].forEach.call(document.querySelectorAll(sel), function (el) {
-      if (el.closest('details')) return;           // forms inside closed panels stay as they are
-      var p = el.parentElement, i = seen.get(p) || 0; seen.set(p, i + 1);
-      tag(el, anim === 'alt' ? (i % 2 ? 'right' : 'left') : anim, i);
-    });
-  }
-  function kids(box, anim) {
-    if (!box) return;
-    [].forEach.call(box.children, function (c, i) { tag(c, anim === 'alt' ? (i % 2 ? 'right' : 'left') : anim, i); });
-  }
+  .abm:hover img,.atc:hover .atimg img{transform:scale(1.04);filter:brightness(1.08) saturate(1.08)}
+  .abm:hover::before,.atc:hover .atimg::before{box-shadow:inset 0 0 0 1px rgba(255,255,255,.5),inset 0 0 28px rgba(240,180,41,.35)}
+  .abm:hover::after,.atc:hover .atimg::after{animation:ab-sheen .9s ease forwards}
+}
+@keyframes ab-sheen{0%{left:-70%;opacity:0}15%{opacity:1}100%{left:130%;opacity:0}}
 
-  if (path === '/') {
-    // home: each section gets its own style, chosen by its heading
-    var styles = [['first sunday', 'pop'], ['centers', 'up'], ['sermons', 'zoom'], ['events', 'left'],
-                  ['everyone', 'flip'], ['projects', 'right'], ['lives changed', 'alt'],
-                  ['vision', 'drop'], ['good to know', 'left'], ['stay connected', 'zoom']];
-    [].forEach.call(document.querySelectorAll('.sh'), function (sh) {
-      var t = sh.textContent.toLowerCase(), a = 'up';
-      styles.some(function (s) { if (t.indexOf(s[0]) > -1) { a = s[1]; return true; } });
-      var box = sh.nextElementSibling;
-      if (box && box.matches('.grid, .steps, .rows, .prose')) kids(box, a);
-      else if (box) { tag(box, a, 0); if (box.nextElementSibling && box.nextElementSibling.matches('form')) tag(box.nextElementSibling, a, 1); }
-    });
-    rule('.quick a', 'up');
-    rule('.stats .wrap > div', 'up');
-    rule('.grid.cta > .card', 'up');
-  }
-  var pages = {
-    '/about': [['.two > *', 'alt'], ['.timeline li', 'left'], ['.grid.three > .card.tint', 'flip'], ['.grid > article.card', 'pop'], ['.grid > .card', 'up']],
-    '/ministries': [['.grid > .card', 'pop']],
-    '/events': [['.card.wide', 'left']],
-    '/projects': [['.card.wide', 'right']],
-    '/resources': [['.rcard', 'up'], ['.card.wide', 'left']],
-    '/livestream': [['.card', 'zoom']],
-    '/give': [['.two > *', 'alt'], ['form', 'up']],
-    '/prayer': [['form', 'up']],
-    '/contact': [['.two > *', 'alt'], ['form', 'up']]
-  };
-  (pages[path] || []).forEach(function (r) { rule(r[0], r[1]); });
-  rule('main .wrap .card', 'up');                  // anything not covered above
-  rule('main .wrap form', 'up');
-  rule('.sh', 'fade');
+/* gentle glow pulse on touch screens (no hover) */
+@media (hover:none){
+  .abm,.atimg{animation:ab-pulse 4s ease-in-out infinite}
+}
+@keyframes ab-pulse{0%,100%{box-shadow:0 4px 14px rgba(23,97,176,.12)}50%{box-shadow:0 6px 22px rgba(23,97,176,.3),0 0 18px rgba(240,180,41,.3)}}
 
-  if (!all.length) return;
-  document.documentElement.classList.add('anim-on');
+@media (prefers-reduced-motion:reduce){
+  .abm,.atimg,.abm img,.atimg img{transition:none;animation:none!important}
+  .abm::after,.atimg::after{display:none}
+}
 
-  function countUp(b) {
-    var m = /^(\D*)([\d,]+)(.*)$/.exec(b.textContent.trim());
-    if (!m) return;
-    var target = parseInt(m[2].replace(/,/g, ''), 10), comma = m[2].indexOf(',') > -1, start = null;
-    function fmt(n) { return m[1] + (comma ? n.toLocaleString() : n) + m[3]; }
-    function step(ts) {
-      if (start === null) start = ts;
-      var k = Math.min((ts - start) / 1300, 1);
-      b.textContent = fmt(Math.round(target * (1 - Math.pow(1 - k, 3))));
-      if (k < 1) requestAnimationFrame(step);
-    }
-    b.textContent = fmt(0);
-    requestAnimationFrame(step);
-  }
+/* ===== Contact page: tagline, icons, map, follow us ===== */
+.ct-sub{margin:-.2rem 0 1.4rem;color:var(--soft);font-size:1.05rem}
 
-  var io = new IntersectionObserver(function (entries) {
-    entries.forEach(function (en) {
-      if (!en.isIntersecting) return;
-      var el = en.target; io.unobserve(el);
-      el.classList.add('in');
-      el.addEventListener('animationend', function (e) { if (e.target === el) el.classList.add('done'); });
-      var b = el.closest('.stats') && el.querySelector('b');
-      if (b) countUp(b);
-    });
-  }, { threshold: 0.12, rootMargin: '0px 0px -6% 0px' });
-  all.forEach(function (el) { io.observe(el); });
-})();
+.ct-list{list-style:none;margin:0 0 1rem;padding:0;display:grid;gap:.7rem}
+.ct-list li{display:flex;align-items:flex-start;gap:.75rem}
+.ct-list i{flex:0 0 2rem;width:2rem;height:2rem;display:grid;place-items:center;border-radius:50%;
+  background:rgba(23,97,176,.1);color:var(--ink);font-size:.9rem}
+.ct-list a{color:inherit;text-decoration:none}
+.ct-list a:hover{color:var(--ink);text-decoration:underline}
+.ct-list span,.ct-list a{padding-top:.2rem}
+
+.ct-map{margin:1.1rem 0;border-radius:12px;overflow:hidden;border:1px solid var(--mist);height:200px;background:var(--mist)}
+.ct-map iframe{display:block;width:100%;height:100%;border:0}
+
+.ct-follow{display:flex;align-items:center;gap:.7rem;flex-wrap:wrap}
+.ct-follow span{font-weight:600}
+.ct-follow a{width:2.4rem;height:2.4rem;display:grid;place-items:center;border-radius:50%;
+  border:1px solid var(--ink);color:var(--ink);text-decoration:none;font-size:1.05rem;
+  transition:background-color .2s,color .2s,transform .2s,box-shadow .2s}
+.ct-follow a:hover,.ct-follow a:focus-visible{background:var(--ink);color:#fff;transform:translateY(-2px);box-shadow:0 6px 16px rgba(23,97,176,.35)}
+
+/* ===== Footer icons ===== */
+.sitefoot .foot-panel li,.sitefoot .foot-panel li a{display:flex;align-items:flex-start;gap:.6rem}
+.sitefoot .foot-panel li a{display:inline-flex}
+.sitefoot .foot-panel li i{flex:0 0 1.1rem;width:1.1rem;text-align:center;margin-top:.28rem;font-size:.85rem;color:var(--red);transition:color .2s}
+.sitefoot .foot-panel li:hover>a i{color:#fff}
+
+/* social: plain icons (no border, no circle), under the Contact list */
+.sitefoot .foot-social{display:flex!important;flex-wrap:wrap;gap:1rem!important;margin-top:.9rem!important}
+.sitefoot .foot-social li{display:block}
+.sitefoot .foot-social a{width:auto;height:auto;padding:.8rem;justify-content:center;align-items:center;gap:0;
+  background:none;border:0;border-radius:0;box-shadow:none;text-decoration:none!important;
+  transition:color .2s,transform .2s}
+.sitefoot .foot-social a i{flex:none;width:auto;margin:0;font-size:1.35rem;color:#fff;transition:color .2s}
+.sitefoot .foot-social a:hover,.sitefoot .foot-social a:focus-visible{background:none;transform:translateY(-2px);box-shadow:none}
+.sitefoot .foot-social a:hover i,.sitefoot .foot-social a:focus-visible i{color:var(--sun)}
+
+/* footer links: no underline on hover, gentle zoom instead */
+.sitefoot .foot-panel a,.sitefoot .foot-panel a:hover,.sitefoot .foot-panel a:focus-visible{text-decoration:none!important}
+.sitefoot .foot-panel ul:not(.foot-social) li>a{transform-origin:left center;transition:transform .2s ease,color .2s ease}
+.sitefoot .foot-panel ul:not(.foot-social) li>a:hover,.sitefoot .foot-panel ul:not(.foot-social) li>a:focus-visible{transform:scale(1.06);color:#fff}
+.sitefoot .foot-panel ul:not(.foot-social) li>a:hover i{color:#fff}
+@media (prefers-reduced-motion:reduce){.sitefoot .foot-panel ul:not(.foot-social) li>a{transition:none}.sitefoot .foot-panel ul:not(.foot-social) li>a:hover{transform:none}}

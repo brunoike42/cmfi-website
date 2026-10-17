@@ -7,7 +7,7 @@ $list = in_array($cat, $cats, true) ? q('SELECT * FROM projects WHERE category =
 <div class="wrap"><h1>Church projects</h1>
 <p class="tabs"><a href="/projects"<?= $cat ? '' : ' class="on"' ?>>All</a><?php foreach ($cats as $c) echo '<a href="/projects?category=' . urlencode($c) . '"' . ($c === $cat ? ' class="on"' : '') . '>' . e($c) . '</a>'; ?></p>
 <?php foreach ($list as $p): $photos = array_filter(explode(',', (string)$p['photos'])); ?>
-  <article class="card wide">
+  <article class="card wide" id="project-<?= (int)$p['id'] ?>">
     <p class="muted"><?= e(implode(' | ', array_filter([$p['category'], $p['location'], $p['status']]))) ?></p>
     <h2><?= e($p['name']) ?></h2>
     <?php if ($photos): ?><div class="slides" data-slides>

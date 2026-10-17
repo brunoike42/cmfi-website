@@ -56,7 +56,7 @@ document.querySelectorAll('[data-slides]').forEach(function (box) {
   box.addEventListener('touchstart', function (e) { x0 = e.touches[0].clientX; }, { passive: true });
   box.addEventListener('touchend', function (e) { if (x0 === null) return; var dx = e.changedTouches[0].clientX - x0; if (Math.abs(dx) > 50) go(cur + (dx < 0 ? 1 : -1)); x0 = null; });
   box.addEventListener('mouseenter', function () { clearTimeout(timer); });
-  box.addEventListener('mouseleave', schedule);
+  box.addEventListener('mouseleave', function () { schedule(); });
   setPaused(paused); media(0, true); schedule();
 })();
 
@@ -71,4 +71,19 @@ document.querySelectorAll('[data-slides]').forEach(function (box) {
   document.addEventListener('click', function (e) { if (!menu.contains(e.target) && !btn.contains(e.target)) set(false); });
   document.addEventListener('keydown', function (e) { if (e.key === 'Escape') { set(false); btn.focus(); } });
   window.addEventListener('resize', function () { if (window.innerWidth > 960) set(false); });
+})();
+
+// YouTube click-to-play: the page shows the video's picture, and the real player loads only when someone presses play.
+// (append to the END of public/assets/app.js)
+(function () {
+  document.addEventListener('click', function (e) {
+    var b = e.target.closest && e.target.closest('.yt-play'); if (!b) return;
+    var box = b.parentNode, id = box.getAttribute('data-yt'); if (!id || !/^[\w-]{11}$/.test(id)) return;
+    var f = document.createElement('iframe');
+    f.src = 'https://www.youtube-nocookie.com/embed/' + id + '?autoplay=1&rel=0';
+    f.title = box.getAttribute('data-title') || 'Video';
+    f.allow = 'autoplay; encrypted-media; picture-in-picture; fullscreen';
+    f.setAttribute('allowfullscreen', '');
+    box.replaceChild(f, b); f.focus();
+  });
 })();

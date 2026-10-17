@@ -1,0 +1,118 @@
+/* Extra styles for: dropdown menu, About pages (history, leaders, explore more) and the home page slideshows.
+   Everything here uses its own class names so it does not clash with assets/style.css. */
+:root{--x-blue:#1a5fb4;--x-ink:#14233a;--x-soft:#eef4fb;--x-line:#d9e2ee;--x-gold:#f2b632}
+
+/* ---------- Dropdown menu ---------- */
+#site-menu .has-dd{position:relative;display:flex;align-items:center;gap:0}
+#site-menu .ni{flex:none;margin-right:6px;vertical-align:-3px}
+#site-menu>li>a,#site-menu .dd-parent{display:inline-flex;align-items:center}
+#site-menu .dd-parent{background:none;border:0;color:inherit;font:inherit;cursor:pointer;padding:8px 10px;border-radius:8px;gap:0}
+#site-menu .dd-parent .ni:last-child{margin:0 0 0 6px}
+#site-menu .dd-toggle{background:none;border:0;color:inherit;cursor:pointer;padding:6px 4px 6px 4px;margin-left:0;display:inline-flex;align-items:center;border-radius:6px}
+#site-menu .dd-toggle .ni{margin:0;transition:transform .18s}
+#site-menu .open>.dd-toggle .ni,#site-menu .open>.dd-parent .ni:last-child{transform:rotate(180deg)}
+#site-menu .has-dd.on>a,#site-menu .dd-parent.on{background:rgba(255,255,255,.16);border-radius:8px}
+#site-menu .dd,#site-menu .dd-sub{display:none;list-style:none;margin:0;padding:6px;background:#fff;border-radius:10px;box-shadow:0 12px 32px rgba(10,30,60,.22);min-width:230px;z-index:60;text-align:left}
+#site-menu .dd a,#site-menu .dd-sub a{display:block;padding:9px 12px;border-radius:7px;color:var(--x-ink);text-decoration:none;font-weight:500;white-space:nowrap;background:none}
+#site-menu .dd a:hover,#site-menu .dd a:focus-visible{background:var(--x-soft);color:var(--x-blue)}
+#site-menu .dd .has-sub{display:flex;align-items:center;position:relative}
+#site-menu .dd .has-sub>a{flex:1}
+#site-menu .dd .dd-toggle{color:var(--x-ink);padding:8px}
+#site-menu .open>.dd,#site-menu .open>.dd-sub{display:block}
+
+@media (min-width:901px){
+  #site-menu .dd{position:absolute;top:100%;left:0;margin-top:2px}
+  #site-menu .dd-sub{position:absolute;left:100%;top:-6px;margin-left:2px}
+  #site-menu .dd .dd-toggle .ni{transform:rotate(-90deg)}
+  #site-menu .dd .open>.dd-toggle .ni{transform:rotate(-90deg)}
+  #site-menu .has-dd:last-of-type>.dd{left:auto;right:0}
+}
+@media (min-width:901px) and (hover:hover){
+  #site-menu .has-dd:hover>.dd,#site-menu .has-dd:focus-within>.dd,
+  #site-menu .dd .has-sub:hover>.dd-sub,#site-menu .dd .has-sub:focus-within>.dd-sub{display:block}
+}
+@media (max-width:900px){
+  #site-menu .has-dd{flex-wrap:wrap}
+  #site-menu .has-dd>a{flex:1}
+  #site-menu .dd,#site-menu .dd-sub{position:static;width:100%;box-shadow:none;background:rgba(255,255,255,.1);padding:4px 4px 4px 12px;margin:2px 0 6px}
+  #site-menu .dd a,#site-menu .dd-sub a{color:#fff;white-space:normal}
+  #site-menu .dd a:hover,#site-menu .dd a:focus-visible{background:rgba(255,255,255,.14);color:#fff}
+  #site-menu .dd .dd-toggle{color:#fff}
+  #site-menu .dd .has-sub{flex-wrap:wrap}
+  #site-menu .dd .dd-sub{background:rgba(0,0,0,.12)}
+  #site-menu .dd-parent{width:100%;justify-content:flex-start;text-align:left}
+  #site-menu .dd-parent .ni:last-child{margin-left:auto}
+}
+
+/* ---------- Our story (history layout): header picture, then picture beside introduction + story ---------- */
+.hist-banner{height:clamp(150px,24vw,280px);background-size:cover;background-position:center}
+.hist-rule{height:4px;background:var(--x-ink)}
+.hist{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);gap:44px;margin-top:36px;margin-bottom:36px;align-items:start}
+.hist.no-side{grid-template-columns:minmax(0,1fr);max-width:820px}
+.hist-side img{width:100%;height:auto;display:block;border-radius:6px}
+.hist-main h1{margin:.2em 0 .5em;text-transform:uppercase;letter-spacing:.02em;font-weight:500}
+.hist-intro{margin:0 0 28px;padding:2px 0 2px 22px;border-left:4px solid var(--x-ink);font-size:clamp(1.1rem,2.1vw,1.45rem);line-height:1.4}
+.hist-text p{margin:0 0 1em;line-height:1.7}
+@media (max-width:760px){.hist{grid-template-columns:minmax(0,1fr);gap:22px}}
+
+/* ---------- Leaders ---------- */
+.ld-pos{margin:-.4em 0 .8em;color:var(--x-blue);font-weight:700;letter-spacing:.02em}
+.ld-ph{aspect-ratio:4/3;border-radius:10px;background:linear-gradient(135deg,var(--x-blue),#0f3d78);color:#fff;display:flex;align-items:center;justify-content:center;font-size:3.5rem;font-weight:800;letter-spacing:.04em}
+
+/* ---------- Explore more: other About sections as title link + one line + thin rule ---------- */
+.xm{margin:56px auto 24px;text-align:center}
+.xm>h2{margin:0 0 28px;font-size:1.15rem;color:var(--x-blue)}
+.xm-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:34px 56px;max-width:860px;margin:0 auto}
+.xm-item a{font-size:1.05rem;color:var(--x-blue);text-decoration:none;font-weight:600}
+.xm-item a:hover{text-decoration:underline}
+.xm-item p{margin:.5em 0 0;line-height:1.55;color:var(--x-ink)}
+.xm-rule{display:block;width:120px;height:1px;background:#c5cfdb;margin:20px 0 0}
+@media (max-width:640px){.xm-grid{grid-template-columns:minmax(0,1fr)}}
+
+/* ---------- Home page slideshows ---------- */
+.xc{margin:34px 0}
+.xc-frame{position:relative}
+.xc-viewport{overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;-ms-overflow-style:none;outline-offset:4px;border-radius:14px}
+.xc-viewport::-webkit-scrollbar{display:none}
+.xc-track{display:flex;gap:18px}
+.xc-card{--w:calc((100% - 36px)/3);flex:0 0 var(--w);scroll-snap-align:start;background:#e8eeea;border:1px solid var(--x-line);border-radius:14px;overflow:hidden;display:flex;flex-direction:column;box-shadow:0 2px 10px rgba(20,35,58,.06)}
+@media (max-width:900px){.xc-card{--w:calc((100% - 18px)/2)}}
+@media (max-width:560px){.xc-card{--w:100%}}
+.xc-img{display:block;aspect-ratio:16/10;background:linear-gradient(135deg,var(--x-blue),#0f3d78);overflow:hidden}
+.xc-img img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .5s}
+.xc-card:hover .xc-img img{transform:scale(1.05)}
+.xc-ph{width:100%;height:100%;display:flex;align-items:center;justify-content:center;color:rgba(255,255,255,.9);font-size:4rem;font-weight:800}
+.xc-body{padding:16px 18px 20px;display:flex;flex-direction:column;gap:8px;flex:1}
+.xc-body h3{margin:0;font-size:1.2rem}
+.xc-body h3 a{color:var(--x-ink);text-decoration:none}
+.xc-body p{margin:0;color:#4b5a70;line-height:1.5;flex:1}
+.xc-body .btn{align-self:flex-start;margin-top:6px}
+.xc-nav{position:absolute;top:calc(50% - 22px);z-index:2;width:44px;height:44px;border-radius:50%;border:0;background:#fff;color:var(--x-ink);font-size:1.8rem;line-height:1;cursor:pointer;box-shadow:0 4px 14px rgba(20,35,58,.28)}
+.xc-nav:hover{background:var(--x-gold)}
+.xc-prev{left:-14px}.xc-next{right:-14px}
+.xc-bar{display:flex;align-items:center;justify-content:center;gap:14px;margin-top:14px}
+.xc-dots{display:flex;gap:8px;flex-wrap:wrap;justify-content:center}
+.xc-dots button{width:10px;height:10px;border-radius:50%;border:0;padding:0;background:#c3cddb;cursor:pointer}
+.xc-dots button[aria-current="true"]{background:var(--x-blue);transform:scale(1.25)}
+.xc-pause{background:none;border:1px solid var(--x-line);color:var(--x-ink);border-radius:999px;padding:3px 12px;font-size:.8rem;cursor:pointer}
+.xc.is-static .xc-nav,.xc.is-static .xc-bar{display:none}
+@media (max-width:640px){.xc-prev{left:4px}.xc-next{right:4px}}
+@media (prefers-reduced-motion:reduce){.xc-img img{transition:none}}
+/* ---------- Header colour: change --x-header to change the colour ---------- */
+:root{--x-header:#1a5fb4}
+body header.top{background:var(#fff);color:#fff}
+body header.top .brand,body header.top .brand *{color:var(--x-blue)}
+body header.top #site-menu>li>a,body header.top #site-menu .dd-parent,body header.top #site-menu .dd-toggle,body header.top .nav-toggle{color:var(--x-ink)}
+body header.top #site-menu .dd a,body header.top #site-menu .dd .dd-toggle{color:var(--x-ink)}
+body header.top #site-menu>li>a.btn{background:#5794f7;color:#fff}
+@media (max-width:900px){body header.top #site-menu .dd a,body header.top #site-menu .dd .dd-toggle{color:#fff}}
+.card{padding:1.2rem 1.5rem}
+
+@media (max-width:960px){
+  body header.top #site-menu .dd,
+  body header.top #site-menu .dd-sub{background:var(--x-soft)}
+  body header.top #site-menu .dd a,
+  body header.top #site-menu .dd .dd-toggle{color:var(--x-ink)}
+  body header.top #site-menu .dd a:hover,
+  body header.top #site-menu .dd a:focus-visible{background:#fff;color:var(--x-blue)}
+}

@@ -8,10 +8,14 @@ return [
     'address' => ['text', 'Address'], 'leader' => ['text', 'Leader'],
     'service_times' => ['text', 'Service times', 0, 'e.g. Sun 9:00 AM, Wed 6:00 PM'], 'phone' => ['text', 'Phone'],
     'maps_url' => ['text', 'Google Maps link', 0, 'Optional'], 'photo' => ['image', 'Photo']]],
-  'leaders' => ['label' => 'Leaders', 'cols' => ['name', 'position'], 'fields' => [
-    'name' => ['text', 'Name', 1], 'position' => ['text', 'Position', 1], 'photo' => ['image', 'Photo'],
-    'bio' => ['textarea', 'Bio'], 'responsibilities' => ['textarea', 'Responsibilities', 0, 'One per line'],
-    'sort_order' => ['number', 'Order']]],
+  'leaders' => ['label' => 'Leaders', 'cols' => ['name', 'position', 'photo', 'sort_order'], 'fields' => [
+    'name' => ['text', 'Name', 1],
+    'position' => ['text', 'Position', 1, 'Shown in the menu too, e.g. Founding leader, International leader, National leader of Uganda'],
+    'photo' => ['image', 'Photo'],
+    'bio' => ['textarea', 'Short description', 0, 'A few lines, shown next to the photo on the Our leaders page'],
+    'story' => ['textarea', 'Full story', 0, 'Opens when a visitor clicks Read more. Blank line between paragraphs'],
+    'responsibilities' => ['textarea', 'Responsibilities', 0, 'One per line'],
+    'sort_order' => ['number', 'Order', 0, 'Smaller numbers show first'], 'hidden' => ['check', 'Hide this leader']]],
   'ministries' => ['label' => 'Ministries', 'cols' => ['name', 'target_group', 'leader'], 'fields' => [
     'name' => ['text', 'Name', 1], 'target_group' => ['text', 'For (e.g. Youth, Women)'], 'description' => ['textarea', 'Description', 1],
     'image' => ['image', 'Image'], 'leader' => ['text', 'Leader'], 'meeting_day' => ['text', 'Meeting day'],
@@ -46,11 +50,36 @@ return [
     'photos' => ['images', 'Photos', 0, 'Several allowed. New photos are added to existing ones'],
     'updates' => ['textarea', 'Updates', 0, 'One per line: when|note  e.g. Sep 2026|Roofing started']]],
   'about' => ['label' => 'About page', 'single' => 1, 'fields' => [
+    'about_intro' => ['text', 'Intro line under the About us title', 0, 'One short sentence. Leave empty for the default'],
     'story' => ['textarea', 'Who we are'], 'timeline' => ['textarea', 'Timeline', 0, 'One per line: year|event'],
     'vision' => ['textarea', 'Vision (type it)'], 'vision_file' => ['file', 'Vision upload (image or PDF)', 0, 'Optional. Use this instead of typing, or together with the text'],
     'mission' => ['textarea', 'Mission (type it)'], 'mission_file' => ['file', 'Mission upload (image or PDF)', 0, 'Optional. Use this instead of typing, or together with the text'],
     'goals' => ['textarea', 'Goals (type it)', 0, 'One per line'], 'goals_file' => ['file', 'Goals upload (image or PDF)', 0, 'Optional. Use this instead of typing, or together with the text'],
     'beliefs' => ['textarea', 'What we believe', 0, 'One per line: title|statement']]],
+
+    'about_topics' => ['label' => 'About topics', 'cols' => ['slug', 'title', 'image', 'sort_order', 'hidden'], 'fields' => [
+    'slug' => ['select', 'Which topic', 1, ['story', 'vision', 'mission', 'goals', 'beliefs', 'leaders']],
+    'title' => ['text', 'Card and page title', 0, 'Leave empty for the default, e.g. Our vision'],
+    'summary' => ['text', 'One-line summary on the card', 0, 'Leave empty to use the start of the text'],
+    'image' => ['image', 'Card image'], 'banner' => ['image', 'Banner image at the top of the page'],
+    'tagline' => ['text', 'Tagline under the page title'],
+    'intro' => ['textarea', 'Introductory text', 0, 'Shown first as a highlighted quote, above the main text (e.g. on Our story)'],
+    'body' => ['textarea', 'Main text', 0, 'e.g. the full story. Blank line between paragraphs. Leave empty to use the text under About page'],
+    'side_image' => ['image', 'Picture next to the main text'],
+    'key_numbers' => ['textarea', 'Key numbers', 0, 'One per line: number|label, e.g. 250|Nations'],
+    'sort_order' => ['number', 'Order', 0, 'Smaller numbers show first'], 'hidden' => ['check', 'Hide this topic (card and page)']]],
+  'about_blocks' => ['label' => 'About page sections', 'cols' => ['topic', 'heading', 'image', 'sort_order', 'hidden'], 'fields' => [
+    'topic' => ['select', 'Show on which topic page', 1, ['story', 'vision', 'mission', 'goals', 'beliefs', 'leaders']],
+    'heading' => ['text', 'Heading'], 'body' => ['textarea', 'Text', 0, 'Blank line between paragraphs'],
+    'image' => ['image', 'Picture', 0, 'Optional. Pictures switch sides from block to block'],
+    'sort_order' => ['number', 'Order', 0, 'Smaller numbers show first'], 'hidden' => ['check', 'Hide this section']]],
+  'home_cards' => ['label' => 'Home page cards', 'cols' => ['page', 'title', 'image', 'sort_order', 'hidden'], 'fields' => [
+    'page' => ['select', 'Which page', 1, ['projects', 'resources', 'events', 'locations', 'livestream', 'ministries', 'prayer', 'give', 'contact']],
+    'title' => ['text', 'Card title', 0, 'Leave empty for the default, e.g. Projects'],
+    'summary' => ['text', 'Short text', 0, 'Leave empty for the default'],
+    'image' => ['image', 'Head picture', 0, 'Leave empty to use a picture from that page (a project photo, book cover, church photo...)'],
+    'button_label' => ['text', 'Button text', 0, 'Leave empty for: Read about <title>'],
+    'sort_order' => ['number', 'Order', 0, 'Smaller numbers show first'], 'hidden' => ['check', 'Hide this card']]],
   'livestream' => ['label' => 'Livestream', 'single' => 1, 'fields' => [
     'youtube_url' => ['text', 'YouTube live or video link'], 'is_live' => ['check', 'We are live now'],
     'next_service' => ['text', 'Next service', 0, 'e.g. Sunday, 10:00 AM'], 'facebook_url' => ['text', 'Facebook link'],
@@ -94,7 +123,11 @@ return [
     'footer_service' => ['text', 'Service time', 0, 'e.g. Sundays, 9:00 AM'],
     'facebook_url' => ['text', 'Facebook link'], 'youtube_url' => ['text', 'YouTube link'],
     'instagram_url' => ['text', 'Instagram link'], 'whatsapp_url' => ['text', 'WhatsApp link'],
-     'books_whatsapp' => ['text', 'Default WhatsApp number for books', 0, 'e.g. 256785123456 or
+    'contact_tagline' => ['text', 'Contact page: line under the title', 0, 'Leave empty for: We\'d love to hear from you.'],
+    'map_embed_url' => ['text', 'Contact page: map link', 0, 'Google Maps > Share > Embed a map > paste the iframe or its src link. Leave empty to show the map from the address'],
+        'tiktok_url' => ['text', 'TikTok link'],
+    'x_url' => ['text', 'X (Twitter) link'],
+    'books_whatsapp' => ['text', 'Default WhatsApp number for books', 0, 'e.g. 256785123456 or
       0785123456. Used when a book has no number of its own. If empty, the WhatsApp link above is used'],
     'stat_members' => ['text', 'Members figure on the home page', 0, 'e.g. 5,000+']]],
   'subscribers' => ['label' => 'Email subscribers', 'inbox' => 1, 'public' => ['email'],

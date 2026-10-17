@@ -62,15 +62,21 @@ if (in_array($kind, ['', 'tract'], true)) {
 <form class="inline" method="get"><input name="q" value="<?= e($qs) ?>" placeholder="Search by title or speaker"><?php if ($kind) echo '<input type="hidden" name="kind" value="' . e($kind) . '">'; ?><button class="btn">Search</button></form>
 <p class="tabs"><?php foreach ([''=>'All','video'=>'Video','audio'=>'Audio','book'=>'Books','tract'=>'Tracts'] as $k => $l) echo '<a href="/resources' . ($k ? "?kind=$k" : '') . '"' . ($k === $kind ? ' class="on"' : '') . '>' . $l . '</a>'; ?></p>
 
+<?php if ($res): ?>
+<div class="rs-grid">
 <?php foreach ($res as $r): $id = $r['kind'] === 'video' ? yt_id($r['youtube_url']) : null; ?>
-  <h2><?= e($r['title']) ?></h2>
-  <p class="muted"><?= e(implode(', ', array_filter([$r['speaker'], fmt_date($r['date'])]))) ?></p>
-  <article class="card wide">
-    <?php if ($id): ?><div class="video"><iframe src="https://www.youtube-nocookie.com/embed/<?= e($id) ?>" title="<?= e($r['title']) ?>" loading="lazy" allowfullscreen></iframe></div><?php endif; ?>
+  <article class="rs-card">
+    <?php if ($id): ?><div class="video yt-lite" data-yt="<?= e($id) ?>" data-title="<?= e($r['title']) ?>"><button type="button" class="yt-play" aria-label="Play <?= e($r['title']) ?>"><img src="https://i.ytimg.com/vi/<?= e($id) ?>/hqdefault.jpg" alt="" loading="lazy"><span class="yt-btn" aria-hidden="true"></span></button></div><?php endif; ?>
     <?php if ($r['kind'] === 'audio' && $r['file']): ?><audio controls preload="none" src="<?= e($r['file']) ?>"></audio><?php endif; ?>
+    <div class="rs-body">
+      <h2><?= e($r['title']) ?></h2>
+      <p class="muted"><?= e(implode(', ', array_filter([$r['speaker'], fmt_date($r['date'])]))) ?></p>
+      <?php if (trim((string)$r['description']) !== ''): ?><details class="rdesc"><summary>Read description</summary><div><?= paragraphs($r['description']) ?></div></details><?php endif; ?>
+    </div>
   </article>
-  <?php if ($r['description']): ?><p><?= e($r['description']) ?></p><?php endif; ?>
 <?php endforeach; ?>
+</div>
+<?php endif; ?>
 
 <?php if ($books): ?>
   <?php if ($kind === ''): ?><h2 class="rsec">Books</h2><?php endif; ?>
@@ -115,4 +121,4 @@ if (in_array($kind, ['', 'tract'], true)) {
 
 <?php if (!$res && !$books && !$tracts): ?><p class="muted">Nothing matches your search. Try another title or speaker.</p><?php endif; ?>
 </div>
-<?php foot();
+<?php foot(); ?>

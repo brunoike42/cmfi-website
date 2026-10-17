@@ -10,7 +10,7 @@ function a_head(string $t, bool $nav = true): void {
     if (!$nav) { echo '<div class="auth">'; return; }
     echo '<div class="admin"><aside><a href="/admin"><b style="margin-top:0">Dashboard</b></a>';
    $groups = ['Content' => ['slides', 'churches', 'leaders', 'ministries', 'events', 'resources', 'projects', 'tracts', 'testimonies', 'news'], 'Pages' =>
-    ['about', 'livestream', 'giving', 'site_settings'], 'Inbox' => ['prayer_requests', 'messages', 'event_registrations', 'ministry_interests', 'subscribers']];
+    ['about', 'about_topics', 'about_blocks', 'home_cards', 'livestream', 'giving', 'site_settings'], 'Inbox' => ['prayer_requests', 'messages', 'event_registrations', 'ministry_interests', 'subscribers']];
     foreach ($groups as $g => $list) { echo '<b>' . $g . '</b>'; foreach ($list as $k) echo '<a href="/admin/' . $k . '">' . e($ents[$k]['label']) . '</a>'; }
     echo '<b>Account</b><a href="/" target="_blank">View site</a><a href="/admin/logout">Log out</a></aside><section>';
     foreach (flashes() as [$ty, $m]) echo '<p class="flash ' . $ty . '" role="status">' . e($m) . '</p>';
@@ -30,9 +30,17 @@ function a_input(string $f, array $s, $v): string {
         case 'date': return "<label>$l<input type=\"date\" name=\"$n\" value=\"" . e(substr((string)$v, 0, 10)) . '"></label>';
         case 'datetime': return "<label>$l<input type=\"datetime-local\" name=\"$n\" value=\"" . e(str_replace(' ', 'T', substr((string)$v, 0, 16))) . '"></label>';
         case 'image': case 'file': case 'images':
-            $cur = $v ? '<small>Current: ' . e(basename(explode(',', $v)[0])) . ($s[0] === 'images' ? ' (' . count(explode(',', $v)) . ' file(s))' : '') . '</small>' : '';
-            $multi = $s[0] === 'images' ? ' multiple' : '';
-            return "<label>$l$h$cur<input type=\"file\" name=\"$n" . ($multi ? '[]' : '') . "\"$multi></label>";
+            $multi = $s[0] === 'images';
+            $items = array_values(array_filter(array_map('trim', explode(',', (string)$v)), 'strlen'));
+            $cur = '';
+            foreach ($items as $path) {
+                $prev = preg_match('~\.(jpe?g|png|webp|gif)$~i', $path) ? '<img class="a-thumb" src="' . e($path) . '" alt="">'
+                      : (preg_match('~\.(mp4|webm|mov)$~i', $path) ? '<video class="a-thumb" src="' . e($path) . '" muted preload="metadata"></video>' : '<span class="a-thumb a-doc">FILE</span>');
+                $cur .= '<div class="a-cur">' . $prev . '<div><small>' . e(basename($path)) . '</small>'
+                      . '<label class="a-rm"><input type="checkbox" name="' . $n . ($multi ? '__rm[]" value="' . e($path) : '__rm" value="1') . '"> Remove this ' . ($multi ? 'one' : 'file') . '</label></div></div>';
+            }
+            $pick = $items ? ($multi ? 'Add more' : 'Replace with a new file') : 'Choose a file';
+            return "<div class=\"a-field\"><span class=\"a-lbl\">$l</span>$h$cur<label class=\"a-pick\">$pick<input type=\"file\" name=\"$n" . ($multi ? '[]' : '') . "\"" . ($multi ? ' multiple' : '') . "></label></div>";
         default: return "<label>$l$h<input type=\"text\" name=\"$n\" value=\"" . e($v) . '"></label>';
     }
 }
@@ -47,11 +55,14 @@ function a_save(string $t, array $d, array $cur, ?int $id): array {
             case 'datetime': $vals[$f] = $in === '' ? '' : str_replace('T', ' ', (string)$in); if (!empty($s[2]) && $vals[$f] === '') $err[] = $s[1] . ' is required'; break;
             case 'image': case 'file':
                 $vals[$f] = $cur[$f] ?? '';
+                if (!empty($_POST[$f . '__rm'])) $vals[$f] = '';          // "Remove" ticked (a new upload below still wins)
                 if (!empty($_FILES[$f]['name'])) { $u = save_upload($_FILES[$f], $s[0] === 'image' ? ['jpg', 'jpeg', 'png', 'webp', 'gif', 'mp4', 'webm', 'mov'] : ['pdf', 'mp3', 'm4a', 'wav', 'jpg', 'jpeg', 'png', 'webp', 'mp4', 'webm']);
                  if ($u) $vals[$f] = $u; else $err[] = $s[1] . ': file type not allowed or too large'; }
                 break;
             case 'images':
                 $all = array_filter(explode(',', (string)($cur[$f] ?? '')));
+                $rm = array_map('strval', (array)($_POST[$f . '__rm'] ?? []));
+                $all = array_values(array_filter($all, fn($pp) => !in_array($pp, $rm, true)));
                 foreach ($_FILES[$f]['name'] ?? [] as $i => $nm) if ($nm !== '') { $u = save_upload(['name' => $nm, 'tmp_name' => $_FILES[$f]['tmp_name'][$i], 'error' => $_FILES[$f]['error'][$i], 'size' => $_FILES[$f]['size'][$i]],
                  ['jpg', 'jpeg', 'png', 'webp', 'gif', 'mp4', 'webm', 'mov'  ]); if ($u) $all[] = $u; else $err[] = 'A photo was not allowed or too large'; }
                 $vals[$f] = implode(',', $all); break;
@@ -99,8 +110,8 @@ if (empty($_SESSION['uid'])) {
 
 // Dashboard
 if (!$parts) {
-    a_head('Dashboard'); echo '<h1>Dashboard</h1><div class="grid">';
-    foreach ($ents as $k => $d) { if (!empty($d['single'])) continue; echo '<a class="card tint" href="/admin/' . $k . '" style="text-decoration:none"><b>' . e($d['label']) . '</b><br><span class="big">' . (int)one("SELECT COUNT(*) c FROM $k")['c'] . '</span></a>'; }
+    a_head('Dashboard'); echo '<h1>Dashboard</h1><div class="dash">';
+    foreach ($ents as $k => $d) { if (!empty($d['single'])) continue; echo '<a class="dash-tile" href="/admin/' . $k . '"><b>' . e($d['label']) . '</b><span>' . (int)one("SELECT COUNT(*) c FROM $k")['c'] . '</span></a>'; }
     echo '</div><p class="muted">Pages such as About, Livestream and Giving are edited under Pages in the menu.</p>'; a_foot(); exit;
 }
 
